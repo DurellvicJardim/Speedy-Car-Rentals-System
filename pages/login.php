@@ -18,10 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   if (count($error_messages) === 0) {
-    $employee_escaped = mysqli_real_escape_string($database_connection, $employee_text);
-    $sql_user = "SELECT * FROM users WHERE employee = '" . $employee_escaped . "' LIMIT 1";
-    $result_user = mysqli_query($database_connection, $sql_user);
-    $user_row = mysqli_fetch_assoc($result_user);
+    $stmt = mysqli_prepare($database_connection, "SELECT id, employee, password_hash FROM users WHERE employee = ? LIMIT 1");
+    mysqli_stmt_bind_param($stmt, "s", $employee_text);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $user_row = mysqli_fetch_assoc($result);
 
     if ($user_row && password_verify($password_text, $user_row['password_hash'])) {
       $_SESSION['user_id'] = (int) $user_row['id'];
@@ -31,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
       $error_messages[] = 'Invalid employee or password.';
     }
+    mysqli_stmt_close($stmt);
   }
 }
 ?>
@@ -44,22 +46,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 <?php endif; ?>
 
-<form method="post" class="row g-3" autocomplete="off">
+<form method="post" class="row g-3" autocomplete="off" novalidate>
   <div class="col-md-6">
     <label class="form-label">Employee</label>
-    <input class="form-control" name="employee" value="<?php echo htmlspecialchars($employee_text); ?>">
+    <input class="form-control" name="employee" value="<?php echo htmlspecialchars($employee_text); ?>" required>
   </div>
   <div class="col-md-6">
     <label class="form-label">Password</label>
-    <input class="form-control" type="password" name="password">
+    <input class="form-control" type="password" name="password" required minlength="6">
   </div>
   <div class="col-12">
     <button class="btn btn-primary" type="submit">Login</button>
-    <p class="mt-3">
-      <a href="forgot_password.php">Forgot your password?</a>
-    </p>
   </div>
-
+  <p class="mt-3"><a href="forgot_password.php">Forgot your password?</a></p>
 </form>
 <?php require __DIR__ . '/../includes/footer.php'; ?>
 

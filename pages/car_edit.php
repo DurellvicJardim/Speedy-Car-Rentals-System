@@ -10,9 +10,11 @@ if ($car_id <= 0) {
   exit;
 }
 
-$sql_one = "SELECT * FROM cars WHERE id = " . $car_id;
-$result_one = mysqli_query($database_connection, $sql_one);
-$current_car = mysqli_fetch_assoc($result_one);
+$stmt0 = mysqli_prepare($database_connection, "SELECT * FROM cars WHERE id = ?");
+mysqli_stmt_bind_param($stmt0, "i", $car_id);
+mysqli_stmt_execute($stmt0);
+$current_car = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt0));
+mysqli_stmt_close($stmt0);
 if (!$current_car) {
   echo '<div class="alert alert-danger">Car not found.</div>';
   require __DIR__ . '/../includes/footer.php';
@@ -36,24 +38,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $availability_checkbox = isset($_POST['availability']) ? 'on' : '';
   $rental_price = trim($_POST['rental_price'] ?? '');
 
-  if ($car_make === '') {
+  if ($car_make === '')
     $error_messages[] = 'Make is required.';
-  }
-  if ($car_model === '') {
+  if ($car_model === '')
     $error_messages[] = 'Model is required.';
-  }
-  if ($car_year === '' || !ctype_digit($car_year)) {
+  if ($car_year === '' || !ctype_digit($car_year))
     $error_messages[] = 'Year must be a whole number.';
-  }
-  if ($car_plate === '') {
+  if ($car_plate === '')
     $error_messages[] = 'License plate is required.';
-  }
-  if ($rental_price === '' || !is_numeric($rental_price)) {
+  if ($rental_price === '' || !is_numeric($rental_price))
     $error_messages[] = 'Price must be a number.';
-  }
 
   $new_image_path = $image_path;
-
   if (isset($_FILES['car_image']) && $_FILES['car_image']['error'] !== UPLOAD_ERR_NO_FILE) {
     if ($_FILES['car_image']['error'] === UPLOAD_ERR_OK) {
       $tmp = $_FILES['car_image']['tmp_name'];
@@ -65,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new_name = 'car_' . time() . '_' . mt_rand(1000, 9999) . '.' . $ext;
         $dest_rel = 'images/' . $new_name;
         $dest_abs = __DIR__ . '/../' . $dest_rel;
-
         if (!move_uploaded_file($tmp, $dest_abs)) {
           $error_messages[] = 'Could not save the uploaded image.';
         } else {
@@ -79,69 +74,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   if (count($error_messages) === 0) {
     $availability_value = ($availability_checkbox === 'on') ? 1 : 0;
+    $stmt = mysqli_prepare(
+      $database_connection,
+      "UPDATE cars SET car_make=?, car_model=?, car_year=?, car_plate=?, availability=?, rental_price=?, image_path=? WHERE id=?"
+    );
+    mysqli_stmt_bind_param(
+      $stmt,
+      "ssissdsi",
+      $car_make,
+      $car_model,
+      $car_year,
+      $car_plate,
+      $availability_value,
+      $rental_price,
+      $new_image_path,
+      $car_id
+    );
+    $ok = mysqli_stmt_execute($stmt);
+    $errno = mysqli_errno($database_connection);
+    mysqli_stmt_close($stmt);
 
-    $sql_update = "UPDATE cars SET
-            car_make     = '" . mysqli_real_escape_string($database_connection, $car_make) . "',
-            car_model    = '" . mysqli_real_escape_string($database_connection, $car_model) . "',
-            car_year     = " . (int) $car_year . ",
-            car_plate    = '" . mysqli_real_escape_string($database_connection, $car_plate) . "',
-            availability = " . (int) $availability_value . ",
-            rental_price = " . (float) $rental_price . ",
-            image_path   = '" . mysqli_real_escape_string($database_connection, $new_image_path) . "'
-            WHERE id = " . $car_id;
-
-    $update_ok = mysqli_query($database_connection, $sql_update);
-
-    if ($update_ok) {
+    if ($ok) {
       header('Location: cars_list.php?message=Car updated');
       exit;
-    } else {
-      if (mysqli_errno($database_connection) == 1062) {
-        $error_messages[] = 'License plate must be unique.';
-      } else {
-        $error_messages[] = 'Update failed.';
-      }
     }
+    if ($errno == 1062)
+      $error_messages[] = 'License plate must be unique.';
+    else
+      $error_messages[] = 'Update failed.';
   }
 }
 ?>
 <h1>Edit Car</h1>
-
-<?php if (count($error_messages) > 0): ?>
+<?php if (count($error_messages)): ?>
   <div class="alert alert-danger">
-    <ul class="mb-0">
-      <?php foreach ($error_messages as $msg): ?>
-        <li><?php echo htmlspecialchars($msg); ?></li>
-      <?php endforeach; ?>
-    </ul>
-  </div>
-<?php endif; ?>
+    <ul class="mb-0"><?php foreach ($error_messages as $m) {
+      echo '<li>' . htmlspecialchars($m) . '</li>';
+    } ?></ul>
+  </div><?php endif; ?>
 
-<form method="post" class="row g-3" enctype="multipart/form-data">
-  <div class="col-md-6">
-    <label class="form-label">Make</label>
-    <input class="form-control" name="car_make" value="<?php echo htmlspecialchars($car_make); ?>">
-  </div>
-  <div class="col-md-6">
-    <label class="form-label">Model</label>
-    <input class="form-control" name="car_model" value="<?php echo htmlspecialchars($car_model); ?>">
-  </div>
-  <div class="col-md-4">
-    <label class="form-label">Year</label>
-    <input class="form-control" name="car_year" value="<?php echo htmlspecialchars($car_year); ?>">
-  </div>
-  <div class="col-md-4">
-    <label class="form-label">License plate</label>
-    <input class="form-control" name="car_plate" value="<?php echo htmlspecialchars($car_plate); ?>">
-  </div>
+<form method="post" class="row g-3" enctype="multipart/form-data" novalidate>
+  <div class="col-md-6"><label class="form-label">Make</label><input class="form-control" name="car_make"
+      value="<?php echo htmlspecialchars($car_make); ?>" required></div>
+  <div class="col-md-6"><label class="form-label">Model</label><input class="form-control" name="car_model"
+      value="<?php echo htmlspecialchars($car_model); ?>" required></div>
+  <div class="col-md-4"><label class="form-label">Year</label><input class="form-control" type="number" name="car_year"
+      value="<?php echo htmlspecialchars($car_year); ?>" required min="1900" max="2099" step="1"></div>
+  <div class="col-md-4"><label class="form-label">License plate</label><input class="form-control" name="car_plate"
+      value="<?php echo htmlspecialchars($car_plate); ?>" required></div>
   <div class="col-md-4 form-check mt-4">
     <input class="form-check-input" type="checkbox" name="availability" id="availability" <?php echo ($availability_checkbox === 'on') ? 'checked' : ''; ?>>
     <label class="form-check-label" for="availability">Available</label>
   </div>
-  <div class="col-md-4">
-    <label class="form-label">Price per day (R)</label>
-    <input class="form-control" name="rental_price" value="<?php echo htmlspecialchars($rental_price); ?>">
-  </div>
+  <div class="col-md-4"><label class="form-label">Price per day (R)</label><input class="form-control" type="number"
+      name="rental_price" value="<?php echo htmlspecialchars($rental_price); ?>" required min="0" step="0.01"></div>
   <div class="col-md-8">
     <label class="form-label">Replace car image (optional)</label>
     <input class="form-control" type="file" name="car_image" accept=".jpg,.jpeg,.png,.gif">
@@ -151,10 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         style="height:60px;margin-top:6px;">
     <?php endif; ?>
   </div>
-  <div class="col-12">
-    <button class="btn btn-primary" type="submit">Update</button>
-    <a class="btn btn-secondary" href="cars_list.php">Cancel</a>
-  </div>
+  <div class="col-12"><button class="btn btn-primary" type="submit">Update</button><a class="btn btn-secondary ms-2"
+      href="cars_list.php">Cancel</a></div>
 </form>
 <?php require __DIR__ . '/../includes/footer.php'; ?>
 

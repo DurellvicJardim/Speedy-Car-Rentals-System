@@ -1,93 +1,43 @@
 <?php
 require __DIR__ . '/../includes/require_login.php';
 require __DIR__ . '/../includes/db.php';
-require __DIR__ . '/../includes/header.php';
 
 $rental_id = isset($_GET['rental_id']) ? (int) $_GET['rental_id'] : 0;
 if ($rental_id <= 0) {
-  echo '<div class="alert alert-danger">Invalid rental id.</div>';
-  require __DIR__ . '/../includes/footer.php';
+  header('Location: rentals_list.php?message=Invalid rental');
   exit;
 }
 
-$sql_one = "SELECT rentals.*, cars.rental_price, cars.id AS car_row_id
-            FROM rentals
-            JOIN cars ON rentals.car_id = cars.id
-            WHERE rentals.id = " . $rental_id;
-$result_one = mysqli_query($database_connection, $sql_one);
-$current_rental = mysqli_fetch_assoc($result_one);
-if (!$current_rental) {
-  echo '<div class="alert alert-danger">Rental not found.</div>';
-  require __DIR__ . '/../includes/footer.php';
+$sql = "SELECT r.id, r.car_id, r.rent_date, c.rental_price
+        FROM rentals r JOIN cars c ON r.car_id = c.id
+        WHERE r.id = ? LIMIT 1";
+$stmt = mysqli_prepare($database_connection, $sql);
+mysqli_stmt_bind_param($stmt, "i", $rental_id);
+mysqli_stmt_execute($stmt);
+$row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
+
+if (!$row) {
+  header('Location: rentals_list.php?message=Rental not found');
   exit;
 }
 
-$error_messages = array();
-$calculated_days = 1;
-$calculated_cost = 0.00;
+$today = new DateTime('today');
+$rent = new DateTime($row['rent_date']);
+$days = (int) ceil(($today->getTimestamp() - $rent->getTimestamp()) / 86400);
+if ($days < 1)
+  $days = 1;
+$cost = $days * (float) $row['rental_price'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $rent_date_string = $current_rental['rent_date'];
-  $today_string = date('Y-m-d');
+$stmt2 = mysqli_prepare($database_connection, "UPDATE rentals SET return_date = CURDATE(), rental_status='Returned', cost=? WHERE id=?");
+mysqli_stmt_bind_param($stmt2, "di", $cost, $rental_id);
+mysqli_stmt_execute($stmt2);
+mysqli_stmt_close($stmt2);
 
-  $rent_date_time = strtotime($rent_date_string);
-  $today_time = strtotime($today_string);
-  $difference_seconds = $today_time - $rent_date_time;
-  $days = (int) ceil($difference_seconds / 86400);
-  if ($days < 1) {
-    $days = 1;
-  }
+$stmt3 = mysqli_prepare($database_connection, "UPDATE cars SET availability = 1 WHERE id = ?");
+mysqli_stmt_bind_param($stmt3, "i", $row['car_id']);
+mysqli_stmt_execute($stmt3);
+mysqli_stmt_close($stmt3);
 
-  $price_per_day = (float) $current_rental['rental_price'];
-  $cost_total = $days * $price_per_day;
-
-  $sql_update_rental = "UPDATE rentals SET
-        return_date = CURDATE(),
-        rental_status = 'Returned',
-        cost = " . $cost_total . "
-        WHERE id = " . $rental_id;
-
-  $ok1 = mysqli_query($database_connection, $sql_update_rental);
-  $ok2 = mysqli_query($database_connection, "UPDATE cars SET availability = 1 WHERE id = " . (int) $current_rental['car_row_id']);
-
-  if ($ok1 && $ok2) {
-    header('Location: rentals_list.php?message=Rental returned');
-    exit;
-  } else {
-    $error_messages[] = 'Could not mark as returned.';
-  }
-} else {
-  $rent_date_string = $current_rental['rent_date'];
-  $today_string = date('Y-m-d');
-
-  $rent_date_time = strtotime($rent_date_string);
-  $today_time = strtotime($today_string);
-  $difference_seconds = $today_time - $rent_date_time;
-  $days = (int) ceil($difference_seconds / 86400);
-  if ($days < 1) {
-    $days = 1;
-  }
-  $calculated_days = $days;
-  $calculated_cost = $calculated_days * (float) $current_rental['rental_price'];
-}
-?>
-<h1>Return Rental</h1>
-
-<?php if (count($error_messages) > 0): ?>
-  <div class="alert alert-danger">
-    <ul class="mb-0">
-      <?php foreach ($error_messages as $msg): ?>
-        <li><?php echo htmlspecialchars($msg); ?></li><?php endforeach; ?>
-    </ul>
-  </div>
-<?php endif; ?>
-
-<p>Return this rental now? Days charged: <strong><?php echo $calculated_days; ?></strong>.
-  Estimated cost: <strong>R <?php echo number_format($calculated_cost, 2); ?></strong></p>
-
-<form method="post">
-  <button class="btn btn-success" type="submit">Confirm Return</button>
-  <a class="btn btn-secondary" href="rentals_list.php">Cancel</a>
-</form>
-<?php require __DIR__ . '/../includes/footer.php'; ?>
-
+header('Location: rentals_list.php?message=Rental returned (R ' . number_format($cost, 2) . ')');
+exit;

@@ -8,19 +8,16 @@ if ($rental_id <= 0) {
   exit;
 }
 
-$sql_update = "UPDATE rentals
-               SET rental_status = 'Overdue'
-               WHERE id = " . $rental_id . "
-                 AND return_date IS NULL
-                 AND expected_return_date < CURDATE()
-                 AND rental_status <> 'Returned'";
+$stmt = mysqli_prepare($database_connection, "UPDATE rentals
+  SET rental_status = 'Overdue'
+  WHERE id = ?
+    AND return_date IS NULL
+    AND expected_return_date < CURDATE()
+    AND rental_status <> 'Returned'");
+mysqli_stmt_bind_param($stmt, "i", $rental_id);
+mysqli_stmt_execute($stmt);
+$affected = mysqli_stmt_affected_rows($stmt);
+mysqli_stmt_close($stmt);
 
-mysqli_query($database_connection, $sql_update);
-
-if (mysqli_affected_rows($database_connection) > 0) {
-  header('Location: rentals_list.php?message=Marked overdue');
-  exit;
-} else {
-  header('Location: rentals_list.php?message=Not overdue or already returned');
-  exit;
-}
+header('Location: rentals_list.php?message=' . ($affected > 0 ? 'Marked overdue' : 'Not overdue or already returned'));
+exit;
