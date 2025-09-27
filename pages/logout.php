@@ -1,0 +1,6 @@
+<?php
+require __DIR__ . '/../includes/session.php';
+session_unset();
+session_destroy();
+header('Location: /car_rental_system/pages/login.php');
+exit;

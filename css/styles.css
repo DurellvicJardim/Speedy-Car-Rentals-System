@@ -1,0 +1,42 @@
+body {
+  background-color: #f7f8fa;
+}
+
+.navbar .navbar-brand {
+  letter-spacing: 0.5px;
+}
+
+.table-striped tbody tr:hover {
+  background-color: #f0f4f8;
+}
+
+.form-text {
+  color: #6c757d;
+}
+
+.alert-success {
+  border-left: 4px solid #198754;
+}
+
+.alert-danger {
+  border-left: 4px solid #dc3545;
+}
+
+.btn-primary {
+  border-radius: 0.6rem;
+}
+
+.card {
+  border-radius: 0.8rem;
+}
+
+.navbar-brand .logo {
+  height: 64px;
+  width: auto;
+  vertical-align: middle;
+}
+.navbar-brand span {
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: 0.5px;
+}

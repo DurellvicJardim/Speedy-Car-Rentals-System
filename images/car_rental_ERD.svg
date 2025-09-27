@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg
+PUBLIC "-//W3C//DTD SVG 1.1//EN"
+       "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg viewBox="165 25 495 595" width="330px" height="570px" xmlns="http://www.w3.org/2000/svg" version="1.1">
+   <line x1="428" y1="230" x2="438" y2="230" style="stroke:#c00;stroke-width:1;"/>
+   <line x1="490" y1="430" x2="480" y2="430" style="stroke:#c00;stroke-width:1;"/>
+   <line x1="438" y1="230" x2="490" y2="430" style="stroke:#c00;stroke-width:1;"/>
+   <line x1="435.5" y1="230" x2="431.96446609407" y2="233.53553390593" style="stroke:#c00;stroke-width:2;"/>
+   <line x1="435.5" y1="230" x2="431.96446609407" y2="226.46446609407" style="stroke:#c00;stroke-width:2;"/>
+   <line x1="485" y1="430" x2="488.53553390593" y2="433.53553390593" style="stroke:#c00;stroke-width:2;"/>
+   <line x1="485" y1="430" x2="488.53553390593" y2="426.46446609407" style="stroke:#c00;stroke-width:2;"/>
+   <line x1="270" y1="250" x2="260" y2="250" style="stroke:#333;stroke-width:1;"/>
+   <line x1="271" y1="430" x2="261" y2="430" style="stroke:#333;stroke-width:1;"/>
+   <line x1="260" y1="250" x2="271" y2="430" style="stroke:#333;stroke-width:1;"/>
+   <line x1="262.5" y1="250" x2="266.03553390593" y2="253.53553390593" style="stroke:#333;stroke-width:2;"/>
+   <line x1="262.5" y1="250" x2="266.03553390593" y2="246.46446609407" style="stroke:#333;stroke-width:2;"/>
+   <line x1="266" y1="430" x2="269.53553390593" y2="433.53553390593" style="stroke:#333;stroke-width:2;"/>
+   <line x1="266" y1="430" x2="269.53553390593" y2="426.46446609407" style="stroke:#333;stroke-width:2;"/>
+   <rect width="90" height="20" x="390" y="400" style="fill:#007;stroke:black;"/>
+   <text width="90" height="20" x="395" y="414" style="fill:#fff;" font-family="Arial" font-size="16px"> cars</text>
+   <rect width="90" height="20" x="390" y="420" style="fill:#aea;stroke:black;"/>
+   <text width="90" height="20" x="395" y="434" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="90" height="20" x="390" y="440" style="fill:none;stroke:black;"/>
+   <text width="90" height="20" x="395" y="454" style="fill:black;" font-family="Arial" font-size="16px">car_make</text>
+   <rect width="90" height="20" x="390" y="460" style="fill:none;stroke:black;"/>
+   <text width="90" height="20" x="395" y="474" style="fill:black;" font-family="Arial" font-size="16px">car_model</text>
+   <rect width="90" height="20" x="390" y="480" style="fill:none;stroke:black;"/>
+   <text width="90" height="20" x="395" y="494" style="fill:black;" font-family="Arial" font-size="16px">car_year</text>
+   <rect width="90" height="20" x="390" y="500" style="fill:none;stroke:black;"/>
+   <text width="90" height="20" x="395" y="514" style="fill:black;" font-family="Arial" font-size="16px">car_plate</text>
+   <rect width="90" height="20" x="390" y="520" style="fill:none;stroke:black;"/>
+   <text width="90" height="20" x="395" y="534" style="fill:black;" font-family="Arial" font-size="16px">availability</text>
+   <rect width="90" height="20" x="390" y="540" style="fill:none;stroke:black;"/>
+   <text width="90" height="20" x="395" y="554" style="fill:black;" font-family="Arial" font-size="16px">rental_price</text>
+   <rect width="90" height="20" x="390" y="560" style="fill:none;stroke:black;"/>
+   <text width="90" height="20" x="395" y="574" style="fill:black;" font-family="Arial" font-size="16px">image_path</text>
+   <rect width="81" height="20" x="180" y="400" style="fill:#007;stroke:black;"/>
+   <text width="81" height="20" x="185" y="414" style="fill:#fff;" font-family="Arial" font-size="16px"> customers</text>
+   <rect width="81" height="20" x="180" y="420" style="fill:#aea;stroke:black;"/>
+   <text width="81" height="20" x="185" y="434" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="81" height="20" x="180" y="440" style="fill:none;stroke:black;"/>
+   <text width="81" height="20" x="185" y="454" style="fill:black;" font-family="Arial" font-size="16px">first_name</text>
+   <rect width="81" height="20" x="180" y="460" style="fill:none;stroke:black;"/>
+   <text width="81" height="20" x="185" y="474" style="fill:black;" font-family="Arial" font-size="16px">last_name</text>
+   <rect width="81" height="20" x="180" y="480" style="fill:none;stroke:black;"/>
+   <text width="81" height="20" x="185" y="494" style="fill:black;" font-family="Arial" font-size="16px">email</text>
+   <rect width="81" height="20" x="180" y="500" style="fill:none;stroke:black;"/>
+   <text width="81" height="20" x="185" y="514" style="fill:black;" font-family="Arial" font-size="16px">phone</text>
+   <rect width="158" height="20" x="270" y="180" style="fill:#007;stroke:black;"/>
+   <text width="158" height="20" x="275" y="194" style="fill:#fff;" font-family="Arial" font-size="16px"> rentals</text>
+   <rect width="158" height="20" x="270" y="200" style="fill:#aea;stroke:black;"/>
+   <text width="158" height="20" x="275" y="214" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="158" height="20" x="270" y="220" style="fill:none;stroke:black;"/>
+   <text width="158" height="20" x="275" y="234" style="fill:black;" font-family="Arial" font-size="16px">car_id</text>
+   <rect width="158" height="20" x="270" y="240" style="fill:none;stroke:black;"/>
+   <text width="158" height="20" x="275" y="254" style="fill:black;" font-family="Arial" font-size="16px">customer_id</text>
+   <rect width="158" height="20" x="270" y="260" style="fill:none;stroke:black;"/>
+   <text width="158" height="20" x="275" y="274" style="fill:black;" font-family="Arial" font-size="16px">rent_date</text>
+   <rect width="158" height="20" x="270" y="280" style="fill:none;stroke:black;"/>
+   <text width="158" height="20" x="275" y="294" style="fill:black;" font-family="Arial" font-size="16px">expected_return_date</text>
+   <rect width="158" height="20" x="270" y="300" style="fill:none;stroke:black;"/>
+   <text width="158" height="20" x="275" y="314" style="fill:black;" font-family="Arial" font-size="16px">return_date</text>
+   <rect width="158" height="20" x="270" y="320" style="fill:none;stroke:black;"/>
+   <text width="158" height="20" x="275" y="334" style="fill:black;" font-family="Arial" font-size="16px">rental_status</text>
+   <rect width="158" height="20" x="270" y="340" style="fill:none;stroke:black;"/>
+   <text width="158" height="20" x="275" y="354" style="fill:black;" font-family="Arial" font-size="16px">cost</text>
+   <rect width="118" height="20" x="270" y="40" style="fill:#007;stroke:black;"/>
+   <text width="118" height="20" x="275" y="54" style="fill:#fff;" font-family="Arial" font-size="16px"> users</text>
+   <rect width="118" height="20" x="270" y="60" style="fill:#aea;stroke:black;"/>
+   <text width="118" height="20" x="275" y="74" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="118" height="20" x="270" y="80" style="fill:none;stroke:black;"/>
+   <text width="118" height="20" x="275" y="94" style="fill:black;" font-family="Arial" font-size="16px">employee</text>
+   <rect width="118" height="20" x="270" y="100" style="fill:none;stroke:black;"/>
+   <text width="118" height="20" x="275" y="114" style="fill:black;" font-family="Arial" font-size="16px">email</text>
+   <rect width="118" height="20" x="270" y="120" style="fill:none;stroke:black;"/>
+   <text width="118" height="20" x="275" y="134" style="fill:black;" font-family="Arial" font-size="16px">password_hash</text>
+</svg>
