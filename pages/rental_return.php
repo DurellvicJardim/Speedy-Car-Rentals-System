@@ -22,11 +22,20 @@ if (!$row) {
   exit;
 }
 
-$today = new DateTime('today');
-$rent = new DateTime($row['rent_date']);
-$days = (int) ceil(($today->getTimestamp() - $rent->getTimestamp()) / 86400);
-if ($days < 1)
+// Simplified date calculation using course-level methods
+$today = date('Y-m-d');
+$rent_date = $row['rent_date'];
+
+// Calculate days using basic string comparison and simple math
+$rent_timestamp = strtotime($rent_date);
+$today_timestamp = strtotime($today);
+$seconds_diff = $today_timestamp - $rent_timestamp;
+$days = ceil($seconds_diff / (60 * 60 * 24)); // Convert seconds to days
+
+if ($days < 1) {
   $days = 1;
+}
+
 $cost = $days * (float) $row['rental_price'];
 
 $stmt2 = mysqli_prepare($database_connection, "UPDATE rentals SET return_date = CURDATE(), rental_status='Returned', cost=? WHERE id=?");

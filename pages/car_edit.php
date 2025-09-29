@@ -91,27 +91,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $car_id
     );
     $ok = mysqli_stmt_execute($stmt);
-    $errno = mysqli_errno($database_connection);
+
+    // Simplified error handling
+    $error_message = mysqli_error($database_connection);
     mysqli_stmt_close($stmt);
 
     if ($ok) {
       header('Location: cars_list.php?message=Car updated');
       exit;
     }
-    if ($errno == 1062)
+
+    // Check for duplicate using string search
+    if (strpos($error_message, 'Duplicate entry') !== false) {
       $error_messages[] = 'License plate must be unique.';
-    else
-      $error_messages[] = 'Update failed.';
+    } else {
+      $error_messages[] = 'Update failed: ' . $error_message;
+    }
   }
 }
 ?>
+
 <h1>Edit Car</h1>
 <?php if (count($error_messages)): ?>
   <div class="alert alert-danger">
     <ul class="mb-0"><?php foreach ($error_messages as $m) {
       echo '<li>' . htmlspecialchars($m) . '</li>';
     } ?></ul>
-  </div><?php endif; ?>
+  </div>
+<?php endif; ?>
 
 <form method="post" class="row g-3" enctype="multipart/form-data" novalidate>
   <div class="col-md-6"><label class="form-label">Make</label><input class="form-control" name="car_make"
@@ -140,5 +147,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="col-12"><button class="btn btn-primary" type="submit">Update</button><a class="btn btn-secondary ms-2"
       href="cars_list.php">Cancel</a></div>
 </form>
+
 <?php require __DIR__ . '/../includes/footer.php'; ?>
 

@@ -68,27 +68,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $image_path
     );
     $ok = mysqli_stmt_execute($stmt);
-    $errno = mysqli_errno($database_connection);
+
+    // Simplified error handling using string search (more beginner-friendly)
+    $error_message = mysqli_error($database_connection);
     mysqli_stmt_close($stmt);
 
     if ($ok) {
       header('Location: cars_list.php?message=Car added');
       exit;
     }
-    if ($errno == 1062)
+
+    // Check for duplicate using string search instead of error codes
+    if (strpos($error_message, 'Duplicate entry') !== false) {
       $error_messages[] = 'License plate must be unique.';
-    else
-      $error_messages[] = 'Insert failed.';
+    } else {
+      $error_messages[] = 'Insert failed: ' . $error_message;
+    }
   }
 }
 ?>
+
 <h1>Add Car</h1>
 <?php if (count($error_messages)): ?>
   <div class="alert alert-danger">
     <ul class="mb-0"><?php foreach ($error_messages as $m) {
       echo '<li>' . htmlspecialchars($m) . '</li>';
     } ?></ul>
-  </div><?php endif; ?>
+  </div>
+<?php endif; ?>
+
 <form method="post" class="row g-3" enctype="multipart/form-data" novalidate>
   <div class="col-md-6"><label class="form-label">Make</label><input class="form-control" name="car_make"
       value="<?php echo htmlspecialchars($car_make); ?>" required></div>
@@ -109,5 +117,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="col-12"><button class="btn btn-primary" type="submit">Save</button><a class="btn btn-secondary ms-2"
       href="cars_list.php">Cancel</a></div>
 </form>
+
 <?php require __DIR__ . '/../includes/footer.php'; ?>
 
